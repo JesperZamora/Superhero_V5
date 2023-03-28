@@ -20,8 +20,8 @@ public class SuperheroRepository implements ISuperheroRepository{
     String pwd;
 
 
-    public List<HeroRealCreationYearDTO> getHeroInfo(){
-        List<HeroRealCreationYearDTO> heroList = new ArrayList<>();
+    public List<SuperheroFormDTO> getHeroInfo(){
+        List<SuperheroFormDTO> heroList = new ArrayList<>();
 
         try(Connection con = DriverManager.getConnection(url,user,pwd)) {
             String SQL = "SELECT * FROM superhero";
@@ -29,10 +29,13 @@ public class SuperheroRepository implements ISuperheroRepository{
             ResultSet rs = stmt.executeQuery(SQL);
 
             while(rs.next()) {
-                heroList.add(new HeroRealCreationYearDTO(
+                heroList.add(new SuperheroFormDTO(
+                        rs.getInt("superhero_id"),
                         rs.getString("hero_name"),
                         rs.getString("real_name"),
-                        rs.getString("creation_year")));
+                        rs.getString("creation_year"),
+                        rs.getString("city_id")
+                ));
             }
             return heroList;
 
@@ -53,6 +56,7 @@ public class SuperheroRepository implements ISuperheroRepository{
             String currentName = "";
 
             while(rs.next()) {
+                int heroId = rs.getInt("superhero_id");
                 String heroName = rs.getString("hero_name");
                 String superpower = rs.getString("superpower");
 
@@ -60,7 +64,7 @@ public class SuperheroRepository implements ISuperheroRepository{
                     superheroPower.addHeroPower(superpower);
 
                 } else  {
-                    superheroPower = new SuperheroPowersDTO(heroName, new ArrayList<>(List.of(superpower)));
+                    superheroPower = new SuperheroPowersDTO(heroId, heroName, new ArrayList<>(List.of(superpower)));
                     currentName = heroName;
                 }
             }
@@ -164,15 +168,60 @@ public class SuperheroRepository implements ISuperheroRepository{
         }
     }
 
-    public void editHero(){
+    public void editHero(SuperheroFormDTO form){
         try(Connection con = DriverManager.getConnection(url,user,pwd)){
-            String SQL = "";
+            // update hero_name, real_name, creation_year, city_id (see SQL2)
+            String SQL1 = "UPDATE superhero SET hero_name=?, real_name=?, creation_year=?, city_id=? WHERE superhero_id = ?;";
+            PreparedStatement pstmt1 = con.prepareStatement(SQL1);
+            pstmt1.setString(1, form.getHeroName());
+            pstmt1.setString(2, form.getRealName());
+            pstmt1.setString(3, form.getCreationYear());
+            pstmt1.setInt(5, form.getId());
 
+            // Get city as String from SuperheroFormDTO instance and get the city_id from database
+            String SQL2 = "SELECT city_id FROM city WHERE city = ?";
+            PreparedStatement pstmt2 = con.prepareStatement(SQL2);
+            pstmt2.setString(1, form.getCity());
+            ResultSet rs = pstmt2.executeQuery();
+            if(rs.next()){
+                pstmt1.setInt(4,rs.getInt("city_id"));
+            }
+            pstmt1.executeUpdate();
+
+            // Make an update function
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public void delete(int heroId){
+        try(Connection con = DriverManager.getConnection(url,user,pwd)) {
+            String SQL = "DELETE FROM superheropower WHERE superhero_id = ?;";
+            PreparedStatement pstmt = con.prepareStatement(SQL);
+            pstmt.setInt(1,heroId);
+            pstmt.executeUpdate();
 
+            String SQL2 = "DELETE FROM superhero WHERE superhero_id = ?";
+            PreparedStatement pstmt2 = con.prepareStatement(SQL2);
+            pstmt2.setInt(1,heroId);
+            pstmt2.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deletePower(int heroId) {
+        try(Connection con = DriverManager.getConnection(url,user,pwd)) {
+            String SQL = "DELETE FROM superheropower WHERE superpower_id = ? AND superhero_id = ?;";
+            PreparedStatement pstmt = con.prepareStatement(SQL);
+            pstmt.setInt(1,1002);
+            pstmt.setInt(2,heroId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

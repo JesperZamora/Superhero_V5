@@ -8,17 +8,15 @@ public class SuperheroFormDTO {
     private String heroName;
     private String realName;
     private String creationYear;
-
     private String city;
     private List<String> powerList;
 
-    public SuperheroFormDTO(int id, String heroName, String realName, String creationYear, String city, List<String> powerList) {
+    public SuperheroFormDTO(int id, String heroName, String realName, String creationYear, String city) {
         this.id = id;
         this.heroName = heroName;
         this.realName = realName;
         this.creationYear = creationYear;
         this.city = city;
-        this.powerList = powerList;
     }
 
     public SuperheroFormDTO(){}

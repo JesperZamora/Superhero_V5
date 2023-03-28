@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface ISuperheroRepository {
 
-    List<HeroRealCreationYearDTO> getHeroInfo();
+    List<SuperheroFormDTO> getHeroInfo();
     SuperheroPowersDTO getHeroPower(String name);
     List<String> getCities();
     List<String> getPowers();
     void addSuperHero(SuperheroFormDTO form);
-    void editHero();
+    void editHero(SuperheroFormDTO form);
+    void delete(int heroId);
+    void deletePower(int heroId);
 
 }

@@ -3,45 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Superhero Database</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" i
-          ntegrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
 
 </head>
-<body style="max-width: 700px; padding: 10px; margin: auto;">
-<h1>Superheroes</h1>
+<body style="max-width: 1100px; padding: 10px; margin: auto;">
+<h1>Superhero Database</h1>
 <hr/>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped table-bordered" id="superhero-table">
+    <thead class="table-dark">
         <tr>
+            <th scope="col">Hero ID</th>
             <th scope="col">Hero name</th>
             <th scope="col">Real name</th>
             <th scope="col">Creation year</th>
+            <th scope="col">City ID</th>
             <th scope="col"></th>
         </tr>
     </thead>
 
     <tbody>
-        <tr th:each="HeroRealCreationYearDTO: ${heroList}">
-            <td th:text="${HeroRealCreationYearDTO.heroName}"/>
-            <td th:text="${HeroRealCreationYearDTO.realName}"/>
-            <td th:text="${HeroRealCreationYearDTO.creationYear}"/>
+        <tr th:each="hero: ${heroList}">
+            <td th:text="${hero.id}"/>
+            <td th:text="${hero.heroName}"/>
+            <td th:text="${hero.realName}"/>
+            <td th:text="${hero.creationYear}"/>
+            <td th:text="${hero.city}"/>
             <td>
-                <a th:href="@{'/superhero/superpower/' + ${HeroRealCreationYearDTO.heroName}}" class="btn btn-light" style="margin-left: 35px">
-                    Power
+                <a th:href="@{'/superhero/superpower/' + ${hero.heroName}}" class="btn btn-light" style="margin-left: 35px">
+                    POWER
                 </a>
-                <a th:href="@{'/superhero/update/' + ${HeroRealCreationYearDTO.heroName}}" class="btn btn-light" style="margin-left: 35px">
-                    Edit
+                <a th:href="@{'/superhero/update/' + ${hero.id}}" class="btn btn-light" style="margin-left: 35px">
+                    UPDATE
                 </a>
+
+                <a th:href="@{'/superhero/delete/' + ${hero.id}}" class="btn btn-danger" style="margin-left: 35px">DELETE</a>
             </td>
         </tr>
-
     </tbody>
 </table>
+<br/>
 <a th:href="@{/superhero/create}">
-    <button type="button" class="btn btn-dark">Add New Superhero</button>
-</a>
-
+    <button type="button" class="btn btn-primary">Add New Superhero</button>
+</a><br/>
+<hr/>
 </body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.js"></script>
+<script>
+    $(document).ready(function (){
+        $("#superhero-table").DataTable();
+    })
+</script>
 </html>
